@@ -1,0 +1,16 @@
+syntax = "proto3"
+
+package gloom
+
+service Gloom {
+	
+	rpc JoinCluster(JoinRequest) returns (JoinResponse) {}
+	rpc AuthNode(NAuthRequest) returns (SAuthResponse) {}
+	rpc AuthClient(CAuthRequest) returns (CAuthResponse) {}
+	rpc BalanceKeys(BalanceRequest) returns (BalanceResponse) {}
+	rpc NodeStream(stream NStreamRequest) returns (stream NStreamResponse)
+	rpc ClientStream(stream CStreamRequest) returns (stream CStreamResponse)
+	rpc NodeStatus(StatusRequest) returns (StatusResponse)
+	rpc RemoteStatus(RStatusRequest) returns (RStatusResponse)
+
+}

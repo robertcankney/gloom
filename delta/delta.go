@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"github.com/cespare/xxhash"
+	"time"
 )
 
 //QuadTree is a Quadtree for storing data about byte ranges - premature optimization for sure
@@ -24,6 +25,7 @@ import (
 type Delta struct {
 	reference int32
 	csum      uint64
+	create    int64
 	// size int32
 	// first []uint64
 	// second []uint64
@@ -39,6 +41,7 @@ func Build(sums []uint64, size int32) (delta Delta) {
 	delta.reference = size
 	delta.csum = encode(sums)
 	delta.sums = sums
+	delta.create = time.Now().UnixNano()
 	return
 }
 
