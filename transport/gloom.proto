@@ -1,16 +1,109 @@
-syntax = "proto3"
+syntax = "proto3";
 
-package gloom
+package gloom;
 
 service Gloom {
 	
-	rpc JoinCluster(JoinRequest) returns (JoinResponse) {}
-	rpc AuthNode(NAuthRequest) returns (SAuthResponse) {}
-	rpc AuthClient(CAuthRequest) returns (CAuthResponse) {}
-	rpc BalanceKeys(BalanceRequest) returns (BalanceResponse) {}
-	rpc NodeStream(stream NStreamRequest) returns (stream NStreamResponse)
-	rpc ClientStream(stream CStreamRequest) returns (stream CStreamResponse)
-	rpc NodeStatus(StatusRequest) returns (StatusResponse)
-	rpc RemoteStatus(RStatusRequest) returns (RStatusResponse)
+	rpc JoinCluster(JoinRequest) returns (GenResponse) {}
+	rpc AuthNode(NAuthRequest) returns (GenResponse) {}
+	rpc AuthClient(AuthRequest) returns (GenResponse) {}
+	rpc BalanceKeys(BalanceRequest) returns (GenResponse) {}
+	rpc NodeStream(stream DataStream) returns (stream DataStream) {}
+	rpc ClientStream(stream DataStream) returns (stream DataStream) {}
+	rpc NewObjects(NewObjectRequest) returns (NewObjectResponse) {}
+	rpc NodeStatus(StatusRequest) returns (StatusResponse) {}
+	rpc RemoteStatus(stream RStatusRequest) returns (stream RStatusResponse) {}
+	rpc InvalidateNode(InvNodeRequest) returns (InvNodeResponse) {}
+}
 
+message JoinRequest {
+	string NewNodeId = 1;
+	string NewAuth = 2;
+}
+
+message GenResponse {
+	bool Success = 1;
+}
+
+message NAuthRequest {
+	string NodeId = 1;
+	string Auth = 2;
+}
+
+message AuthRequest {
+	string ClientId = 1;
+	string SubId = 2;
+	string Auth = 3;
+}
+
+message BalanceRequest {
+	uint64 KeyStart = 1;
+	uint64 KeyEnd = 2;
+}
+
+message DataStream {
+	string ObjKey = 1;
+	AuthRequest Auth = 2;
+	uint64 Sum = 3;
+	bytes Payload = 4;
+	int64 Location = 5;
+	int64 Timestamp = 6;
+	enum ObjStatus {
+		NEW = 0;
+		STALE = 1;
+		UPDATE = 2;
+		DELETE = 3;
+		CLOBBER = 4;
+		NOOP = 5;
+	}
+}
+
+// message CStreamResponse {
+// 	string CRespKey = 1;
+// 	string CReqClientId = 2;
+// 	string CReqSubId = 3;
+// 	uint64 Sum = 4;
+// 	bytes Payload = 5;
+// 	int64 Location = 6;
+// }
+
+message NewObjectRequest {
+	string NewKey = 1;
+	AuthRequest Auth = 2;
+}
+
+message NewObjectResponse {
+	bytes NewObjKeys = 1;
+}
+
+message StatusRequest {
+	string StatusNodeId = 1;
+}
+
+message StatusResponse {
+	enum NodeStatus {
+		AVAILABLE = 0;
+		BOOTSTRAPPING = 1;
+		UNAVAILBLE = 2;
+	}
+}
+
+message RStatusRequest {
+	string RemoteNodeId = 1;
+}
+
+message RStatusResponse {
+	enum NodeStatus {
+		AVAILABLE = 0;
+		BOOTSTRAPPING = 1;
+		UNAVAILBLE = 2;
+	}
+}
+
+message InvNodeRequest {
+	string InvNodeId = 1;
+}
+
+message InvNodeResponse {
+	bool Success = 1;
 }

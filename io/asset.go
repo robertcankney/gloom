@@ -6,7 +6,7 @@ import (
 
 //Asset wraps a ReadWriter and encapsulates a Blocks struct
 type Asset struct {
-	rw     io2.ReadWriter
+	rw     io.ReadWriter
 	blocks Blocks
 }
 
@@ -14,7 +14,7 @@ type Asset struct {
 //as well as send byte ranges
 type Blocks struct {
 	Sums  <-chan SendRange
-	Block chan<- int
+	Block chan<- int64
 	Bytes <-chan []byte
 }
 
@@ -33,7 +33,7 @@ type ReceiveRange struct {
 //GenSums creates a set of sums for an already tracked file - for comparison rather than streaming something new (sync)
 //Largely this package contains code should be agnostic of use, but this meets a specific use case - client daemon was down
 //and is assessing if a modified file's state
-func (asset *Asset) GenSums(size int) {
+func (asset *Asset) GenSums(size int64) {
 
 }
 

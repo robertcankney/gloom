@@ -23,7 +23,7 @@ import (
 // First either contains direct hashes of blocks of sums of reference size, or aggregates second
 // Regardless of number of aggregated sums, first will have a max of 10 elements, second a max of 100
 type Delta struct {
-	reference int32
+	reference uint32
 	csum      uint64
 	create    int64
 	// size int32
@@ -37,7 +37,7 @@ type Delta struct {
 var ErrSizeMisalignment = errors.New("Block size differs between deltas")
 
 //Calculates fields
-func Build(sums []uint64, size int32) (delta Delta) {
+func BuildSync(sums []uint64, size int64) (delta Delta) {
 	delta.reference = size
 	delta.csum = encode(sums)
 	delta.sums = sums
@@ -48,7 +48,7 @@ func Build(sums []uint64, size int32) (delta Delta) {
 //Local in this case would be the source - not necessarily a local copy
 //Client -> cloud -> other client would have local be the cloud for the second compare
 //overS and overE are start and end indices to delete - remote being truncated in this case
-func (local *Delta) Compare(remote *Delta) (blocks []int, overS int, overE int, err error) {
+func (local *Delta) CompareSync(remote *Delta) (blocks []int64, overS int64, overE int64, err error) {
 
 	if local.reference != remote.reference {
 		err = ErrSizeMisalignment
@@ -69,7 +69,7 @@ func (local *Delta) Compare(remote *Delta) (blocks []int, overS int, overE int, 
 		overE = r - 1
 	}
 
-	blocks = make([]int, 0, len(local.sums))
+	blocks = make([]int64, 0, len(local.sums))
 
 	for i := 0; i < len(local.sums); i++ {
 		if local.sums[i] != remote.sums[i] {
